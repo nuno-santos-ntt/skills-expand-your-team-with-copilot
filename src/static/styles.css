@@ -1,16 +1,16 @@
 /* Color palette */
 :root {
-  /* Primary colors */
-  --primary: #1a237e;
-  --primary-light: #534bae;
-  --primary-dark: #000051;
+  /* Primary colors - School colors: white and lime green */
+  --primary: #2e7d32;
+  --primary-light: #66bb6a;
+  --primary-dark: #1b5e20;
   --primary-text: #ffffff;
 
   /* Secondary colors */
-  --secondary: #ff6f00;
-  --secondary-light: #ffa040;
-  --secondary-dark: #c43e00;
-  --secondary-text: #ffffff;
+  --secondary: #76ff03;
+  --secondary-light: #b0ff57;
+  --secondary-dark: #32cb00;
+  --secondary-text: #1b5e20;
 
   /* Neutral colors */
   --background: #f5f5f5;
@@ -212,8 +212,8 @@ section h3 {
   position: absolute;
   top: 8px;
   right: 8px;
-  background: #e8eaf6;
-  color: #3949ab;
+  background: #e8f5e9;
+  color: var(--primary-dark);
   font-size: 0.65rem;
   font-weight: bold;
   padding: 2px 6px;
@@ -514,7 +514,7 @@ footer {
 .search-box input:focus {
   outline: none;
   border-color: var(--primary-light);
-  box-shadow: 0 0 0 2px rgba(83, 75, 174, 0.1);
+  box-shadow: 0 0 0 2px rgba(102, 187, 106, 0.2);
 }
 
 .search-box button {
@@ -556,7 +556,8 @@ footer {
 
 .category-filters,
 .day-filters,
-.time-filters {
+.time-filters,
+.group-by-filters {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
@@ -564,7 +565,8 @@ footer {
 
 .category-filter,
 .day-filter,
-.time-filter {
+.time-filter,
+.group-by-filter {
   background-color: var(--background);
   border: 1px solid var(--border);
   color: var(--text-primary);
@@ -577,7 +579,8 @@ footer {
 
 .category-filter.active,
 .day-filter.active,
-.time-filter.active {
+.time-filter.active,
+.group-by-filter.active {
   background-color: var(--primary);
   color: white;
   border-color: var(--primary-dark);
@@ -585,9 +588,31 @@ footer {
 
 .category-filter:hover,
 .day-filter:hover,
-.time-filter:hover {
+.time-filter:hover,
+.group-by-filter:hover {
   background-color: var(--primary-light);
   color: white;
+}
+
+.activity-group {
+  width: 100%;
+  margin-bottom: 24px;
+  grid-column: 1 / -1;
+}
+
+.activity-group-header {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 6px;
+  margin-bottom: 14px;
+}
+
+.activity-group-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
 }
 
 .time-filters {
@@ -680,4 +705,57 @@ footer {
 
 #logout-button:hover {
   background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Animated Git branch background canvas */
+#git-bg-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.18;
+}
+
+/* Mascot gallery */
+#mascot-section {
+  margin-top: 20px;
+}
+
+#mascot-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  padding: 10px 0;
+}
+
+.mascot-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.mascot-item img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid var(--primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.mascot-item img:hover {
+  transform: scale(1.15);
+  box-shadow: 0 6px 16px rgba(46, 125, 50, 0.4);
+}
+
+.mascot-item span {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 500;
 }

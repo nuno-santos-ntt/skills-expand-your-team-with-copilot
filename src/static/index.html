@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <!-- Animated Git branch background -->
+    <canvas id="git-bg-canvas"></canvas>
     <header>
       <h1>Mergington High School</h1>
       <h2>Extracurricular Activities</h2>
@@ -99,6 +101,22 @@
                 <button class="time-filter" data-time="weekend">Weekend</button>
               </div>
             </div>
+
+            <!-- Group By -->
+            <div class="filter-container group-by-container">
+              <div class="filter-label">Group by:</div>
+              <div class="group-by-filters" id="group-by-filters">
+                <button class="group-by-filter active" data-group="">
+                  None
+                </button>
+                <button class="group-by-filter" data-group="category">
+                  Category
+                </button>
+                <button class="group-by-filter" data-group="day">
+                  Day
+                </button>
+              </div>
+            </div>
           </aside>
 
           <!-- Activities Content -->
@@ -168,6 +186,152 @@
       </div>
     </div>
 
+    <!-- Mascot Gallery -->
+    <section id="mascot-section">
+      <h3>🐙 Mergington High Mascots</h3>
+      <div id="mascot-gallery">
+        <div class="mascot-item">
+          <img src="https://octodex.github.com/images/original.png" alt="Original Octocat" title="Original Octocat" />
+          <span>Original</span>
+        </div>
+        <div class="mascot-item">
+          <img src="https://octodex.github.com/images/daftpunktocat-thomas.gif" alt="Daft Punk Thomas Octocat" title="Daft Punk Thomas" />
+          <span>DJ Octocat</span>
+        </div>
+        <div class="mascot-item">
+          <img src="https://octodex.github.com/images/nyantocat.gif" alt="Nyan Octocat" title="Nyan Octocat" />
+          <span>Nyan Octocat</span>
+        </div>
+        <div class="mascot-item">
+          <img src="https://octodex.github.com/images/octobiwan.png" alt="OctoBiWan" title="OctoBiWan" />
+          <span>OctoBiWan</span>
+        </div>
+        <div class="mascot-item">
+          <img src="https://octodex.github.com/images/scarletteocat.jpg" alt="Scarlett O'Ctocat" title="Scarlett O'Ctocat" />
+          <span>Scarlett</span>
+        </div>
+        <div class="mascot-item">
+          <img src="https://octodex.github.com/images/octoliberty.png" alt="Octo Liberty" title="Octo Liberty" />
+          <span>Octo Liberty</span>
+        </div>
+      </div>
+    </section>
+
     <script src="app.js"></script>
+    <script>
+      // Animated Git-style branch lines background
+      (function () {
+        const canvas = document.getElementById('git-bg-canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resize() {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        // Each "branch" is a polyline with a moving dot
+        const BRANCH_COLOR = '#2e7d32';
+        const DOT_COLOR = '#76ff03';
+        const NUM_BRANCHES = 8;
+
+        function randomBranch() {
+          const startX = Math.random() * window.innerWidth;
+          const startY = Math.random() * window.innerHeight;
+          const segments = 3 + Math.floor(Math.random() * 3);
+          const points = [{ x: startX, y: startY }];
+          for (let i = 0; i < segments; i++) {
+            const last = points[points.length - 1];
+            const angle = (Math.random() - 0.5) * Math.PI * 0.6;
+            const len = 80 + Math.random() * 120;
+            // Mostly downward
+            const baseAngle = Math.PI / 2;
+            points.push({
+              x: last.x + Math.cos(baseAngle + angle) * len,
+              y: last.y + Math.sin(baseAngle + angle) * len,
+            });
+          }
+          return {
+            points,
+            progress: Math.random(),
+            speed: 0.001 + Math.random() * 0.002,
+            totalLength: 0,
+          };
+        }
+
+        function branchLength(points) {
+          let len = 0;
+          for (let i = 1; i < points.length; i++) {
+            const dx = points[i].x - points[i - 1].x;
+            const dy = points[i].y - points[i - 1].y;
+            len += Math.sqrt(dx * dx + dy * dy);
+          }
+          return len;
+        }
+
+        function pointAlongBranch(points, t) {
+          const total = branchLength(points);
+          let target = t * total;
+          for (let i = 1; i < points.length; i++) {
+            const dx = points[i].x - points[i - 1].x;
+            const dy = points[i].y - points[i - 1].y;
+            const seg = Math.sqrt(dx * dx + dy * dy);
+            if (target <= seg) {
+              return {
+                x: points[i - 1].x + (dx / seg) * target,
+                y: points[i - 1].y + (dy / seg) * target,
+              };
+            }
+            target -= seg;
+          }
+          return points[points.length - 1];
+        }
+
+        let branches = Array.from({ length: NUM_BRANCHES }, randomBranch);
+
+        function draw() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+          branches.forEach((b) => {
+            // Draw the path
+            ctx.beginPath();
+            ctx.moveTo(b.points[0].x, b.points[0].y);
+            for (let i = 1; i < b.points.length; i++) {
+              ctx.lineTo(b.points[i].x, b.points[i].y);
+            }
+            ctx.strokeStyle = BRANCH_COLOR;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Draw commit dots at each point
+            b.points.forEach((p) => {
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+              ctx.fillStyle = BRANCH_COLOR;
+              ctx.fill();
+            });
+
+            // Draw the animated moving dot
+            const pos = pointAlongBranch(b.points, b.progress);
+            ctx.beginPath();
+            ctx.arc(pos.x, pos.y, 6, 0, Math.PI * 2);
+            ctx.fillStyle = DOT_COLOR;
+            ctx.fill();
+
+            // Advance progress
+            b.progress += b.speed;
+            if (b.progress > 1) {
+              Object.assign(b, randomBranch());
+              b.progress = 0;
+            }
+          });
+
+          requestAnimationFrame(draw);
+        }
+
+        draw();
+      })();
+    </script>
   </body>
 </html>
